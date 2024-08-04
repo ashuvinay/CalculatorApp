@@ -1,4 +1,5 @@
 ﻿using CalculatorLibrary;
+using System.Diagnostics;
 
 namespace Calculator
 {
@@ -216,6 +217,15 @@ namespace Calculator
                 {
                     result = txtResultBox.Text = calculationResult.ToString("F5");
                 }
+
+                string logMessage = $" 'Fisrt Operand:' {fstNum} 'Operation:' {operation} 'Second Operand:' {secNum} 'Result:' {result}";
+
+#if DEBUG
+                Debug.WriteLine(logMessage);
+#else
+                string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log.txt");
+                File.AppendAllText(logFilePath, logMessage+Environment.NewLine,new UTF8Encoding(true));
+#endif
             }
             catch (System.OverflowException)
             {

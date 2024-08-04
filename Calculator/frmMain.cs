@@ -1,22 +1,26 @@
-using CalculatorLibrary;
+﻿using CalculatorLibrary;
 
 namespace Calculator
 {
     public partial class frmMain : Form
     {
-
+        #region Variable Declaration
         private decimal fstNum, secNum = 0.0m;
         private string result = string.Empty;
         private string operation = string.Empty;
         private readonly CalculatorService calculatorService;
+        #endregion
 
+        #region Constructors
         public frmMain()
         {
             InitializeComponent();
             AddControlEvents();
+            calculatorService = new CalculatorService();
         }
+        #endregion
 
-
+        #region Private Methods
         private void AddControlEvents()
         {
             btnDecimal.Click += BtnDecimal_Click;
@@ -30,15 +34,58 @@ namespace Calculator
             btn7.Click += BtnNums_Click;
             btn8.Click += BtnNums_Click;
             btn9.Click += BtnNums_Click;
+
+            btnSquire.Click += BtnOperation_Click;
+            btnSqrt.Click += BtnOperation_Click;
+            btn1x.Click += BtnOperation_Click;
+            btnPercent.Click += BtnOperation_Click;
+            btnPlusMinus.Click += BtnOperation_Click;
+
+            btnDivide.Click += Operation_Click;
+            btnMultiply.Click += Operation_Click;
+            btnMinus.Click += Operation_Click;
+            btnPlus.Click += Operation_Click;
+
+            btnCE.Click += BtnCE_Click;
+            btnC.Click += BtnC_Click;
+            btnBack.Click += BtnBack_Click;
             btnEquals.Click += BtnEquals_Click;
 
+            this.KeyPreview = true;
             this.KeyPress += new KeyPressEventHandler(frmMain_KeyPress);
+            this.KeyDown += new KeyEventHandler(frmMain_KeyDown);
+            this.txtResultBox.KeyPress += TxtResultBox_KeyPress;
+        }
+        #endregion
+
+        #region Control Events
+
+        private void BtnDecimal_Click(object? sender, EventArgs e)
+        {
+            if (txtResultBox.Text == "Infinity" || txtResultBox.Text == "∞")
+            {
+                MessageBox.Show("Can not operate with infinity");
+                btnC.PerformClick();
+                return;
+            }
+
+            if (!txtResultBox.Text.Contains('.'))
+            {
+                txtResultBox.Text += ".";
+            }
         }
 
         private void BtnNums_Click(object? sender, EventArgs e)
         {
             try
             {
+                if (txtResultBox.Text == "Infinity" || txtResultBox.Text == "∞")
+                {
+                    MessageBox.Show("Can not operate with infinity");
+                    btnC.PerformClick();
+                    return;
+                }
+
                 if (txtResultBox.Text == result)
                     txtResultBox.Text = "0";
 
@@ -63,25 +110,67 @@ namespace Calculator
             }
         }
 
-        private void BtnDecimal_Click(object? sender, EventArgs e)
-        {
-            if (!txtResultBox.Text.Contains('.'))
-            {
-                txtResultBox.Text += ".";
-            }
-        }
-
-        private void frmMain_KeyPress(object? sender, KeyPressEventArgs e)
+        private void BtnOperation_Click(object? sender, EventArgs e)
         {
             try
             {
-                if (char.IsDigit(e.KeyChar))
+
+                if (txtResultBox.Text == "Infinity" || txtResultBox.Text == "∞")
                 {
-                    BtnNums_Click(this.Controls.Find("btn" + e.KeyChar, true).FirstOrDefault(), e);
+                    MessageBox.Show("Can not operate with infinity");
+                    btnC.PerformClick();
                 }
-                else if (e.KeyChar == '.')
+                else
                 {
-                    BtnDecimal_Click(btnDecimal, e);
+                    Button button = (Button)sender;
+                    operation = button.Text;
+                    switch (operation)
+                    {
+                        case "√x":
+                            txtDisplayOp.Text = $"√({txtResultBox.Text})";
+                            result = Convert.ToString(Math.Sqrt(Convert.ToDouble(txtResultBox.Text)));
+                            break;
+                        case "^2":
+                            txtDisplayOp.Text = $"({txtResultBox.Text})^2";
+                            result = Convert.ToString(Convert.ToDouble(txtResultBox.Text) * (Convert.ToDouble(txtResultBox.Text)));
+                            break;
+                        case "¹/x":
+                            txtDisplayOp.Text = $"¹/({txtResultBox.Text})";
+                            result = Convert.ToString(1.0 / Convert.ToDouble(txtResultBox.Text));
+                            break;
+                        case "%":
+                            txtDisplayOp.Text = $"%({txtResultBox.Text})";
+                            result = Convert.ToString(Convert.ToDouble(txtResultBox.Text) / Convert.ToDouble(100));
+                            break;
+                        case "+/-":
+                            //txtDis.Text = $"%({txtResultBox.Text})";
+                            result = Convert.ToString(-Convert.ToDouble(txtResultBox.Text));
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (result == "∞")
+                    {
+                        txtResultBox.Text = "Infinity";
+                        return;
+                    }
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        decimal CalResult = decimal.Parse(result);
+
+                        if (CalResult % 1 == 0)
+                        {
+                            result = txtResultBox.Text = CalResult.ToString("F0");
+                        }
+                        else
+                        {
+                            result = txtResultBox.Text = CalResult.ToString("F5");
+                        }
+
+                    }
                 }
             }
             catch (Exception ex)
@@ -141,5 +230,167 @@ namespace Calculator
                 txtDisplayOp.Text = $"{txtResultBox.Text} =";
             }
         }
+
+        private void BtnBack_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (txtResultBox.Text.ToLower() == "infinity" || txtResultBox.Text.ToLower() == "∞")
+                {
+                    btnC.PerformClick();
+                }
+
+                if (txtResultBox.Text.Length > 0)
+                {
+                    txtResultBox.Text = txtResultBox.Text.Remove(txtResultBox.Text.Length - 1, 1);
+                }
+                if (txtResultBox.Text == "")
+                    txtResultBox.Text = txtResultBox.Text = "0";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void BtnCE_Click(object? sender, EventArgs e)
+        {
+            txtResultBox.Text = "0";
+        }
+
+        private void BtnC_Click(object? sender, EventArgs e)
+        {
+            fstNum = 0; secNum = 0.0m;
+            operation = string.Empty;
+            txtDisplayOp.Text = "";
+            txtResultBox.Text = "0";
+        }
+
+        private void Operation_Click(object? sender, EventArgs e)
+        {
+            if (txtResultBox.Text == "Infinity" || txtResultBox.Text == "∞")
+            {
+                MessageBox.Show("Can not operate with infinity");
+                btnC.PerformClick();
+            }
+            else
+            {
+                try
+                {
+
+
+                    btnEquals.PerformClick();
+
+                    Button button = (Button)sender;
+                    fstNum = decimal.Parse(txtResultBox.Text);
+                    operation = button.Text;
+                    txtResultBox.Text = "0";
+
+                    txtDisplayOp.Text = fstNum.ToString() + " " + operation;
+
+                    btnPlus.Enabled = false;
+                    btnMinus.Enabled = false;
+                    btnMultiply.Enabled = false;
+                    btnDivide.Enabled = false;
+                }
+                catch (System.OverflowException)
+                {
+                    MessageBox.Show("The Number Is Too Long.");
+                }
+            }
+        }
+
+        private void frmMain_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            try
+            {
+                if (char.IsDigit(e.KeyChar))
+                {
+                    BtnNums_Click(this.Controls.Find("btn" + e.KeyChar, true).FirstOrDefault(), e);
+                }
+                else if (e.KeyChar == '.')
+                {
+                    BtnDecimal_Click(btnDecimal, e);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void TxtResultBox_KeyPress(object? sender, KeyPressEventArgs e)
+        {
+            try
+            {
+                if (char.IsControl(e.KeyChar) || char.IsDigit(e.KeyChar) || e.KeyChar == '.')
+                {
+                    if (e.KeyChar == '.')
+                    {
+                        if ((sender as TextBox).Text.IndexOf('.') > -1)
+                        {
+                            e.Handled = true;
+                        }
+                    }
+                    else
+                    {
+                        string currentText = (sender as TextBox).Text;
+                        if (currentText.Length >= 5 && char.IsDigit(e.KeyChar))
+                        {
+                            e.Handled = true;
+                        }
+                    }
+                }
+                else
+                {
+                    e.Handled = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Enter:
+                        BtnEquals_Click(btnEquals, e);
+                        break;
+                    case Keys.Back:
+                        BtnBack_Click(btnBack, e);
+                        break;
+                    case Keys.Add:
+                        Operation_Click(btnPlus, e);
+                        break;
+                    case Keys.Subtract:
+                        Operation_Click(btnMinus, e);
+                        break;
+                    case Keys.Multiply:
+                        Operation_Click(btnMultiply, e);
+                        break;
+                    case Keys.Divide:
+                        Operation_Click(btnDivide, e);
+                        break;
+                    case Keys.Escape:
+                        BtnCE_Click(btnCE, e);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        #endregion
     }
+
 }

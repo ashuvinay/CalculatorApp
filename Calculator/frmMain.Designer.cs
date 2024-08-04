@@ -97,6 +97,7 @@
             txtDisplayOp.Location = new Point(0, 0);
             txtDisplayOp.Multiline = true;
             txtDisplayOp.Name = "txtDisplayOp";
+            txtDisplayOp.ReadOnly = true;
             txtDisplayOp.Size = new Size(414, 28);
             txtDisplayOp.TabIndex = 0;
             txtDisplayOp.TextAlign = HorizontalAlignment.Right;

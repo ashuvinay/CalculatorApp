@@ -22,6 +22,9 @@ namespace Calculator
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// Added events of controls
+        /// </summary>
         private void AddControlEvents()
         {
             btnDecimal.Click += BtnDecimal_Click;
@@ -76,6 +79,11 @@ namespace Calculator
             }
         }
 
+        /// <summary>
+        /// number entered by the user using mouse click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnNums_Click(object? sender, EventArgs e)
         {
             try
@@ -111,6 +119,11 @@ namespace Calculator
             }
         }
 
+        /// <summary>
+        /// perform special operation in the calculator
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnOperation_Click(object? sender, EventArgs e)
         {
             try
@@ -268,6 +281,11 @@ namespace Calculator
             txtResultBox.Text = "0";
         }
 
+        /// <summary>
+        /// Clear result screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BtnC_Click(object? sender, EventArgs e)
         {
             fstNum = 0; secNum = 0.0m;
@@ -310,6 +328,11 @@ namespace Calculator
             }
         }
 
+        /// <summary>
+        /// Added code so that user can input using keybord Also.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmMain_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -329,6 +352,11 @@ namespace Calculator
             }
         }
 
+        /// <summary>
+        /// Added Code so that user can only able input numeric value in result textBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TxtResultBox_KeyPress(object? sender, KeyPressEventArgs e)
         {
             try
@@ -363,6 +391,11 @@ namespace Calculator
             }
         }
 
+        /// <summary>
+        /// Added Event so that user can perform operation using keybodrd
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
             try

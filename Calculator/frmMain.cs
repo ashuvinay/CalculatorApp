@@ -1,9 +1,14 @@
+using CalculatorLibrary;
+
 namespace Calculator
 {
     public partial class frmMain : Form
     {
-        
+
+        private decimal fstNum, secNum = 0.0m;
         private string result = string.Empty;
+        private string operation = string.Empty;
+        private readonly CalculatorService calculatorService;
 
         public frmMain()
         {
@@ -25,6 +30,7 @@ namespace Calculator
             btn7.Click += BtnNums_Click;
             btn8.Click += BtnNums_Click;
             btn9.Click += BtnNums_Click;
+            btnEquals.Click += BtnEquals_Click;
 
             this.KeyPress += new KeyPressEventHandler(frmMain_KeyPress);
         }
@@ -81,6 +87,58 @@ namespace Calculator
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void BtnEquals_Click(object? sender, EventArgs e)
+        {
+            if (!decimal.TryParse(txtResultBox.Text, out secNum))
+            {
+                btnC.PerformClick();
+                return;
+            }
+
+            secNum = decimal.Parse(txtResultBox.Text);
+
+            if (operation == "+")
+            {
+                txtDisplayOp.Text = "";
+                txtDisplayOp.Text = $"{secNum} {operation} {fstNum} =";
+            }
+            else
+            {
+                txtDisplayOp.Text = "";
+                txtDisplayOp.Text = $" {fstNum} {operation} {secNum} =";
+            }
+
+            btnPlus.Enabled = true;
+            btnMinus.Enabled = true;
+            btnMultiply.Enabled = true;
+            btnDivide.Enabled = true;
+
+            try
+            {
+                decimal calculationResult = calculatorService.ExecuteOperation(operation, fstNum, secNum);
+                if (calculationResult % 1 == 0)
+                {
+                    result = txtResultBox.Text = calculationResult.ToString("F0");
+                }
+                else
+                {
+                    result = txtResultBox.Text = calculationResult.ToString("F5");
+                }
+            }
+            catch (System.OverflowException)
+            {
+                MessageBox.Show("The Number Is Too Long.");
+            }
+            catch (DivideByZeroException)
+            {
+                result = txtResultBox.Text = "Infinity";
+            }
+            catch (InvalidOperationException)
+            {
+                txtDisplayOp.Text = $"{txtResultBox.Text} =";
             }
         }
     }

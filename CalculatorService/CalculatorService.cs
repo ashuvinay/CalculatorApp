@@ -1,4 +1,4 @@
-﻿namespace CalculatorService
+﻿namespace CalculatorLibrary
 {
     public class CalculatorService
     {
